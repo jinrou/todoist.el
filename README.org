@@ -1,2 +1,3 @@
-# todoist.el
+#+TITLE: todoist.el
+
 Elisp library to interface with Todoist API
