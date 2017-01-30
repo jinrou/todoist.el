@@ -1,3 +1,74 @@
 #+TITLE: todoist.el
 
 Elisp library to interface with Todoist API
+
+* TODO [0/4]
+** TODO Todoist API interface
+** TODO Sync logic between local DB and todoist.com DB
+** TODO Generate Org TODO lists using local DB
+** TODO Sync changes in Org TODO lists back to local DB
+
+* Hash table Spec
+** Item spec from Todoist API
+[[https://developer.todoist.com/#items][todoist Item]]
+#+BEGIN_EXAMPLE
+{
+  "id"              : 33511505,
+  "user_id"         : 1855589,
+  "project_id"      : 128501470,
+  "content"         : "Task1",
+  "date_string"     : "",
+  "date_lang"       : "en",
+  "due_date_utc"    : null,
+  "indent"          : 1,
+  "priority"        : 1,
+  "item_order"      : 1,
+  "day_order"       : -1,
+  "collapsed"       : 0,
+  "children"        : null,
+  "labels"          : [12839231, 18391839],
+  "assigned_by_uid" : 1855589,
+  "responsible_uid" : null,
+  "checked"         : 0,
+  "in_history"      : 0,
+  "is_deleted"      : 0,
+  "is_archived"     : 0,
+  "sync_id"         : null,
+  "date_added"      : "Fri 26 Sep 2014 08:25:05 +0000"
+}
+#+END_EXAMPLE
+** Example todoist task
+#+BEGIN_EXAMPLE
+Get coffee beans !!1 @grocery #coffee every month starting Feb 1
+#+END_EXAMPLE
+*** Data breakdown
+|-------------------+----------------------+----------------------+--------------|
+|                   | <l20>                | <l20>                |              |
+| Property          | Description          | Value Example        | Type         |
+|-------------------+----------------------+----------------------+--------------|
+| =id=              | Task ID.             | 123456               | integer      |
+| =user-id=         | Task owner.          | 789012               | integer      |
+| =project-id=      | ID of the project the task resides in. | 345678               | integer      |
+| =project-string=  | Name of the project the task resides in. | "coffee"             | string       |
+| =content=         | Task text.           | "Get coffee beans"   | string       |
+| =date-string=     | Task date in free-form, as entered by user. | "Feb 1"              | string       |
+| =date-lang=       | Language of date string. | 'en                  | symbol       |
+| =due-date-utc=    | The date of the task in the format Mon 07 Aug 2006 12:34:56 +0000 (or null if not set). For all day task (i.e. task due “Today”), the time part will be set as xx:xx:59. | /UTC representation of 2017/02/01 12:00am/ | string       |
+| =priority=        | The priority of the task. (a number between 1 and 4). | 1                    | integer      |
+| =indent=          | The indent of the task (a number between 1 and 4, where 1 is top-level). | 1                    | integer      |
+| =item-order=      | The order of the task inside a project (the smallest value would place the task at the top). | 1                    | integer      |
+| =day-order=       | The order of the task inside the Today or Next 7 days view (a number, where the smallest value would place the task at the top). | -1                   | integer      |
+| =collapsed=       | Whether the task’s sub-tasks are collapsed (where non-nil is true and nil is false). | nil                  | bool         |
+| =labels=          | The tasks labels (a list of label ids such as [2324,2525]). | [987654]             | integer list |
+| =labels-string=   | List of labels, using string names instead of integer label IDs. | ["grocery"]          | string list  |
+| =assigned-by-uid= | The id of the user who assigns the current task. This makes sense for shared projects only. Accepts 0 or any user id from the list of project collaborators. If this value is unset or invalid, it will automatically be set up to your uid. | 0                    | integer      |
+| =responsible-uid= | The id of user who is responsible for accomplishing the current task. This makes sense for shared projects only. Accepts any user id from the list of project collaborators or null or an empty string to unset. | 0                    | integer      |
+| =checked=         | Whether the task is marked as completed (where non-nil is true and nil is false). | nil                  | bool         |
+| =in-history=      | Whether the task has been marked as completed and is marked to be moved to history, because all the child tasks of its parent are also marked as completed (where non-nil is true and nil is false). | nil                  | bool         |
+| =is-deleted=      | Whether the task is marked as deleted (where non-nil is true and nil is false). | nil                  | bool         |
+| =is-archived=     | Whether the task is marked as archived (where non-nil is true and nil is false). | nil                  | bool         |
+| =sync-id=         | A special id for shared tasks (a number or null if not set). Used internally and can be ignored. | null                 | integer      |
+| =date-added=      | The date when the task was created. | "Sun 29 Jan 2017 08:25:05 +0000" | string       |
+| =children=        | /TBD/                | null                 | /?/          |
+| =repeat=          | /TBD/                | "every month"? or 'every-month? or 30? | /?/          |
+|-------------------+----------------------+----------------------+--------------|
